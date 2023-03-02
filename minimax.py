@@ -32,7 +32,7 @@ def main():
         temp_board[row][col] = piece
         if check_win(temp_board, piece):
             temp_board = flip_board(temp_board)
-            print(temp_board)
+            #print(temp_board)
             temp_board = flip_board(temp_board)
             global counter
             counter += 1
@@ -62,61 +62,53 @@ def main():
 
 
     def create_tree(node, depth, piece, board):
+        global moves
         if depth % 2 == init_depth:
             piece = 2
         else:
             piece = 1
         if depth != 0:
-            for col in range(COL_COUNT):
-                temp_board = copy.deepcopy(board)
-                row = next_row(temp_board, col)
-                if row != -1:
-                    temp_board = place_piece_less(temp_board, col, row, piece)
-                    score = 9*player_score_three(temp_board, piece) + 4*player_score_two(temp_board, piece) + player_score_one(temp_board, piece)
-                    next = Node(score)
-                    set_next(node, next)
-                    if score == math.inf or score == -math.inf:
-                        if node.children is not None:
-                            node.children[len(node.children) - 1].children = None
-                    if depth % 2 == init_depth:
-                        piece = 2
-                    else:
-                        piece = 1
-                    create_tree(next, depth - 1, piece, temp_board)
+                for col in range(COL_COUNT):
+                    temp_board = copy.deepcopy(board)
+                    row = next_row(temp_board, col)
+                    if row != -1:
+                        temp_board = place_piece_less(temp_board, col, row, piece)
+                        score = 9*player_score_three(temp_board, 2) + 4*player_score_two(temp_board, 2) + player_score_one(temp_board, 2)
+                        next = Node(score)
+                        set_next(node, next)
+                        
+                        if depth % 2 == init_depth:
+                            piece = 2
+                        else:
+                            piece = 1
+                        
+                        create_tree(next, depth - 1, piece, temp_board)
     
     def mini_max(node, depth, maxPlayer):
         if depth <= 0 or node == None:
             return node.value
         if maxPlayer:
             maximum = -math.inf
-            if node.children is not None:
+            if node.children is not None and len(node.children) > 0:
                 for child in node.children:
                     value = max(maximum, mini_max(child, depth - 1, False))
+                    if value > maximum:
+                        maximum = value
                 node.value = value
                 return value
             else:
                 return node.value
         else:
             minimum = math.inf
-            if node.children is not None:
+            if node.children is not None and len(node.children) > 0:
                 for child in node.children:
                     value = min(minimum, mini_max(child, depth - 1, True))
+                    if value < minimum:
+                        minimum = value
                 node.value = value
                 return value
             else:
                 return node.value
-    
-    def best_position(node, depth):
-        max = -math.inf
-        col = 0
-        i = 0
-        for child in node.children:
-            value = mini_max(child, depth - 2, False)
-            if value > max:
-                max = value
-                col = i
-            i+=1
-        return col
 
     def player_score_three(board, player):
         if player == 1:
@@ -511,6 +503,18 @@ def main():
         game_over = True
         return game_over
     
+    def place_pieces(position, board, turn):
+        for x in str(position):
+            x = int(x)
+            row = next_row(board, x)
+            if turn == 0:
+                board[row][x] = 1
+            else:
+                board[row][x] = 2
+            turn += 1
+            turn %= 2
+        return board
+    
 
     # Create game_over boolean which says if game is over or not and row
     game_over = False
@@ -541,6 +545,7 @@ def main():
     pygame.display.update()
 
     board = create_board()
+    #board = place_pieces("33242112322344444355665", board, 1)
     board = flip_board(board)
     game_id= ""
     global init_depth
@@ -608,16 +613,25 @@ def main():
             player = 2
             color = GREEN
             #start = timeit.default_timer()
-            player_one_score = 9*player_score_three(board, 1) + 4*player_score_two(board, 1) + player_score_one(board, 1)
-            root = Node(player_one_score)
+            player_two_score = 9*player_score_three(board, 2) + 4*player_score_two(board, 2) + player_score_one(board, 2)
+            root = Node(player_two_score)
             depth = 4
             init_depth = depth % 2
             counter = 0
             create_tree(root, depth, piece, board)
-            print_tree(root, depth)
-            col = best_position(root, depth)
-            #for child in root.children:
-               #print(child.value)
+                       
+            mini_max(root, depth, True)
+
+            val = root.children[0].value
+            index = 0
+            for child in root.children:
+                print(child.value)
+                if child.value > val:
+                    if valid_location(board, index):
+                        val = child.value
+                        col = index
+                index += 1
+                
 
             # Get next available rowx
             row = next_row(board, col)

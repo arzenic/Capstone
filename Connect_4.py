@@ -333,7 +333,12 @@ def main():
 						# Check for a draw
 						if check_draw(board):
 							draw_move()
-
+#36
+#24
+#35
+#32
+#-inf
+#-inf
 						# Check for a win
 						if check_win(board, 2):
 							game_over = winning_move(player)
