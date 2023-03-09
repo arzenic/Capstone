@@ -2,6 +2,7 @@ import numpy as np
 import sys
 import pygame
 import math
+import csv
 
 def main():
     pygame.init()
@@ -34,8 +35,15 @@ def main():
         return board
 
     def player_score_three(board, player):
+        if player == 1:
+            opp = 2
+        else:
+            opp = 1
         if check_win(board, player):
             score = math.inf
+            return score
+        if check_win(board, opp):
+            score = -math.inf
             return score
         score = 0
         total = 0
@@ -52,9 +60,6 @@ def main():
         return score
     
     def player_score_two(board, player):
-        if check_win(board, player):
-            score = math.inf
-            return score
         score = 0
         total = 0
         counter = 0
@@ -70,9 +75,6 @@ def main():
         return score
     
     def player_score_one(board, player):
-        if check_win(board, player):
-            score = math.inf
-            return score
         score = 0
         total = 0
         for i in range(ROW_COUNT):
@@ -269,17 +271,11 @@ def main():
         return total
 
     def check_win(board, piece):
-        x = 3
-
         # Check horizontal locations right
         for r in range(ROW_COUNT):
             for c in range(COL_COUNT):
                 if valid_piece(r, c+3):
                     if board[r][c] == piece and board[r][c+1] == piece and board[r][c+2] == piece and board[r][c+3] == piece:
-                        board[r][c] = x
-                        board[r][c+1] = x
-                        board[r][c+2] = x
-                        board[r][c+3] = x
                         return True
                 else:
                     continue
@@ -289,10 +285,6 @@ def main():
             for c in range(COL_COUNT):
                 if valid_piece(r, c-3):
                     if board[r][c] == piece and board[r][c-1] == piece and board[r][c-2] == piece and board[r][c-3] == piece:
-                        board[r][c] = x
-                        board[r][c-1] = x
-                        board[r][c-2] = x
-                        board[r][c-3] = x
                         return True
                 else:
                     continue
@@ -302,10 +294,6 @@ def main():
             for c in range(COL_COUNT):
                 if valid_piece(r+3, c):
                     if board[r][c] == piece and board[r+1][c] == piece and board[r+2][c] == piece and board[r+3][c] == piece:
-                        board[r][c] = x
-                        board[r+1][c] = x
-                        board[r+2][c] = x
-                        board[r+3][c] = x
                         return True
                 else:
                     continue
@@ -315,10 +303,6 @@ def main():
             for c in range(COL_COUNT):
                 if valid_piece(r-3, c):
                     if board[r][c] == piece and board[r-1][c] == piece and board[r-2][c] == piece and board[r-3][c] == piece:
-                        board[r][c] = x
-                        board[r-1][c] = x
-                        board[r-2][c] = x
-                        board[r-3][c] = x
                         return True
                 else:
                     continue
@@ -328,10 +312,6 @@ def main():
             for c in range(COL_COUNT):
                 if valid_piece(r+3, c+3):
                     if board[r][c] == piece and board[r+1][c+1] == piece and board[r+2][c+2] == piece and board[r+3][c+3] == piece:
-                        board[r][c] = x
-                        board[r+1][c+1] = x
-                        board[r+2][c+2] = x
-                        board[r+3][c+3] = x
                         return True
                 else:
                     continue
@@ -341,10 +321,6 @@ def main():
             for c in range(COL_COUNT):
                 if valid_piece(r+3, c-3):
                     if board[r][c] == piece and board[r+1][c-1] == piece and board[r+2][c-2] == piece and board[r+3][c-3] == piece:
-                        board[r][c] = x
-                        board[r+1][c-1] = x
-                        board[r+2][c-2] = x
-                        board[r+3][c-3] = x
                         return True
                 else:
                     continue
@@ -354,10 +330,6 @@ def main():
             for c in range(COL_COUNT):
                 if valid_piece(r-3, c-3):
                     if board[r][c] == piece and board[r-1][c-1] == piece and board[r-2][c-2] == piece and board[r-3][c-3] == piece:
-                        board[r][c] = x
-                        board[r-1][c-1] = x
-                        board[r-2][c-2] = x
-                        board[r-3][c-3] = x
                         return True
                 else:
                     continue
@@ -367,10 +339,6 @@ def main():
             for c in range(COL_COUNT):
                 if valid_piece(r-3, c+3):
                     if board[r][c] == piece and board[r-1][c+1] == piece and board[r-2][c+2] == piece and board[r-3][c+3] == piece:
-                        board[r][c] = x
-                        board[r-1][c+1] = x
-                        board[r-2][c+2] = x
-                        board[r-3][c+3] = x
                         return True
                 else:
                     continue
@@ -487,6 +455,8 @@ def main():
     draw_board(screen, BLUE, BLACK, RADIUS)
     pygame.transform.flip(screen, True, False)
     pygame.display.update()
+
+    
 
     board = create_board()
     game_id= ""
