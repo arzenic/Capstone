@@ -38,9 +38,9 @@ def main():
         return board[5][col] == 0
 
     # Get next row available
-    def next_row(board, col):
+    def next_row(temp_board, col):
         for row in range(ROW_COUNT):
-            if board[row][col] == 0:
+            if temp_board[row][col] == 0:
                 return row
         return -1
         
@@ -49,10 +49,10 @@ def main():
             if node.children is not None:
                 node.children.append(next)
 
-    def available_col(board):
+    def available_col(temp_board):
         cols = []
         for col in range(COL_COUNT):
-            if valid_location(board, col):
+            if valid_location(temp_board, col):
                 cols.append(col)
         return cols
                             
@@ -68,8 +68,9 @@ def main():
                 piece = 1
             else:
                 piece = 2
-        bestCol = 0
+        
         columns = available_col(board)
+        bestCol = columns[0]
         if depth <= 0:
             return node.value
         if maxPlayer:
@@ -687,7 +688,6 @@ def main():
 
                             # Place piece
                             place_piece(board, col, row, piece, screen, color, RADIUS)
-                            #print(col, end = '')
 
                             # Check for a draw
                             if check_draw(board):
@@ -744,7 +744,6 @@ def main():
             row = next_row(board, col)
             # Place piece
             place_piece(board, col, row, piece, screen, color, RADIUS)
-            print(counter)
             
             # Check for a draw
             if check_draw(board):
@@ -776,9 +775,6 @@ def main():
             turn += 1
             turn %= 2
             
-            #stop = timeit.default_timer()
-
-            #print('Time: ', stop - start)  
         elif turn == 0 and ai_player == 1:
             piece = 1
             player = 1
@@ -799,7 +795,6 @@ def main():
             row = next_row(board, col)
             # Place piece
             place_piece(board, col, row, piece, screen, color, RADIUS)
-            #print(counter)
             
             # Check for a draw
             if check_draw(board):
@@ -831,9 +826,6 @@ def main():
             turn += 1
             turn %= 2
             
-            #stop = timeit.default_timer()
-
-            #print('Time: ', stop - start)
         elif turn == 1 and ai_player == 1:
             # Start loop for mose clicks and positions
             for event in pygame.event.get():
@@ -868,7 +860,6 @@ def main():
 
                             # Place piece
                             place_piece(board, col, row, piece, screen, color, RADIUS)
-                            #print(col, end = '')
 
                             # Check for a draw
                             if check_draw(board):
